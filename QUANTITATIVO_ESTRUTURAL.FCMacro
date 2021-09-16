@@ -1,0 +1,101 @@
+
+lista = App.ActiveDocument.Objects
+
+pilares = []
+vigas = []
+
+#renomeia as vigas e os pilares e as coloca em listas diferentes
+for obj in lista:
+    
+    try:
+        print(obj.IfcType)
+        if obj.IfcType == 'Column':
+            pilares.append(obj)
+            obj.Label = 'P'+str(len(pilares))
+
+        elif obj.IfcType == 'Beam':
+            vigas.append(obj)
+            obj.Label = 'V'+str(len(vigas))
+
+        else:
+            pass  
+    except:
+        pass
+'''
+for i in range(len(vigas)):
+    vigas[i].Label = 'V'+str(i+1)
+
+for i in range(len(pilares)):
+    pilares[i].Label = 'P'+str(i+1)
+'''
+
+#TABELA ESTRUTURA
+tabela = App.activeDocument().addObject('Spreadsheet::Sheet','Estrutura')
+
+#PILARES###############################################################
+tabela.mergeCells('A1:E1')#Uni as celulas da tabela
+tabela.setAlignment('A1:E1', 'center', 'keep')#Centraliza o texto
+tabela.set('A1','PILARES')
+tabela.setBackground('A1',(0.000000,0.501961,0.000000))
+tabela.setForeground('A1', (1.000000,1.000000,1.000000))
+
+tabela.set('A2','Ref.')
+tabela.set('B2','Altura')
+tabela.set('C2','Comprimento')
+tabela.set('D2','Largura')
+tabela.set('E2','Volume')
+tabela.setBackground('A2:E2', (0.752941,0.752941,0.752941))
+
+ 
+for i in range(3,len(pilares)+3):
+    tabela.set('A'+str(i),str(pilares[i-3].Label))
+    tabela.set('B'+str(i),'=<<'+str(pilares[i-3].Label)+'>>.Height')
+    tabela.set('C'+str(i),'=<<'+str(pilares[i-3].Label)+'>>.Length')
+    tabela.set('D'+str(i),'=<<'+str(pilares[i-3].Label)+'>>.Width')
+
+    tabela.set('E'+str(i),'=B'+str(i)+'*'+'C'+str(i)+'*''D'+str(i))
+    tabela.setDisplayUnit('E'+str(i), 'm^3')
+
+equacao = '='
+for i in range(3,len(pilares)+3):
+    equacao+='+E'+str(i)
+tabela.set('D'+str(len(pilares)+3),'Total:')
+tabela.set('E'+str(len(pilares)+3),equacao)
+tabela.setDisplayUnit('E'+str(len(pilares)+3), 'm^3')
+
+
+
+
+#VIGAS############################################################
+tabela.mergeCells('G1:K1')#Uni as celulas da tabela
+tabela.setAlignment('G1:K1', 'center', 'keep')#Centraliza o texto
+tabela.set('G1','VIGAS')
+tabela.setBackground('G1',(0.000000,0.501961,0.000000))
+tabela.setForeground('G1', (1.000000,1.000000,1.000000))
+
+tabela.set('G2','Ref.')
+tabela.set('H2','Altura')
+tabela.set('I2','Comprimento')
+tabela.set('J2','Largura')
+tabela.set('K2','Volume')
+tabela.setBackground('G2:K2', (0.752941,0.752941,0.752941))
+
+ 
+for i in range(3,len(vigas)+3):
+    tabela.set('G'+str(i),str(vigas[i-3].Label))
+    tabela.set('H'+str(i),'=<<'+str(vigas[i-3].Label)+'>>.Height')
+    tabela.set('I'+str(i),'=<<'+str(vigas[i-3].Label)+'>>.Length')
+    tabela.set('J'+str(i),'=<<'+str(vigas[i-3].Label)+'>>.Width')
+
+    tabela.set('K'+str(i),'=H'+str(i)+'*'+'I'+str(i)+'*''J'+str(i))
+    tabela.setDisplayUnit('K'+str(i), 'm^3')
+
+equacao = '='
+for i in range(3,len(vigas)+3):
+    equacao+='+K'+str(i)
+tabela.set('J'+str(len(vigas)+3),'Total:')
+tabela.set('K'+str(len(vigas)+3),equacao)
+tabela.setDisplayUnit('K'+str(len(vigas)+3), 'm^3')
+
+
+App.ActiveDocument.recompute()
