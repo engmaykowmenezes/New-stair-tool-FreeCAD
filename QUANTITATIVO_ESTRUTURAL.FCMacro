@@ -3,6 +3,7 @@ lista = App.ActiveDocument.Objects
 
 pilares = []
 vigas = []
+lajes = []
 
 #renomeia as vigas e os pilares e as coloca em listas diferentes
 for obj in lista:
@@ -16,6 +17,10 @@ for obj in lista:
         elif obj.IfcType == 'Beam':
             vigas.append(obj)
             obj.Label = 'V'+str(len(vigas))
+
+        elif obj.IfcType == 'Slab':
+            lajes.append(obj)
+            obj.Label = 'L'+str(len(lajes))
 
         else:
             pass  
@@ -96,6 +101,40 @@ for i in range(3,len(vigas)+3):
 tabela.set('J'+str(len(vigas)+3),'Total:')
 tabela.set('K'+str(len(vigas)+3),equacao)
 tabela.setDisplayUnit('K'+str(len(vigas)+3), 'm^3')
+
+
+#LAJES############################################################
+tabela.mergeCells('M1:P1')#Uni as celulas da tabela
+tabela.setAlignment('M1:P1', 'center', 'keep')#Centraliza o texto
+tabela.set('M1','Lajes')
+tabela.setBackground('M1',(0.000000,0.501961,0.000000))
+tabela.setForeground('M1', (1.000000,1.000000,1.000000))
+
+tabela.set('M2','Ref.')
+tabela.set('N2','Área')
+tabela.set('O2','Altura')
+tabela.set('P2','Volume')
+tabela.setBackground('M2:P2', (0.752941,0.752941,0.752941))
+
+ 
+for i in range(3,len(lajes)+3):
+    tabela.set('M'+str(i),str(lajes[i-3].Label))
+    tabela.set('N'+str(i),'=<<'+str(lajes[i-3].Label)+'>>.HorizontalArea')
+    tabela.set('O'+str(i),'=<<'+str(lajes[i-3].Label)+'>>.Height')
+
+    tabela.set('P'+str(i),'=N'+str(i)+'*'+'O'+str(i))
+    tabela.setDisplayUnit('P'+str(i), 'm^3')
+
+equacao = '='
+equacao2 = '='
+for i in range(3,len(lajes)+3):
+    equacao+='+P'+str(i)
+    equacao2+= '+N'+str(i)
+
+tabela.set('M'+str(len(lajes)+3),'Total:')
+tabela.set('P'+str(len(lajes)+3),equacao)
+tabela.set('N'+str(len(lajes)+3),equacao2)
+tabela.setDisplayUnit('K'+str(len(lajes)+3), 'm^3')
 
 
 App.ActiveDocument.recompute()
