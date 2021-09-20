@@ -1,10 +1,14 @@
-# Macro FreeCAD dedicada a modelagem paramétrica de escada circular
+#Macro FreeCAD dedicada a modelagem paramétrica de escada circular
 #Autor: Eng. Maykow Menezes; +55(62)993990525; eng.maykowmenezes@gmail.com
+
+
 
 from tkinter import *
 import math
+import Draft
+import Arch
 
-
+#Gui.activateWorkbench("BIMWorkbench")
 
 class Escada():
 	def __init__(self,root):
